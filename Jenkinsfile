@@ -1,12 +1,13 @@
 node {
     checkout scm
 
-    docker.image('node:16-buster-slim').inside('-p 4000:4000') {
+    docker.image('maven:3.9.0').inside('-v /root/.m2:/root/.m2') {
         stage('Build') {
-            sh 'npm install'
+            sh 'mvn -B -DskipTests clean package'
         }
         stage('Test') {
-            sh './jenkins/scripts/test.sh'
+            sh 'mvn test'
+            junit 'target/surefire-reports/*.xml'
         }
     }
 }
